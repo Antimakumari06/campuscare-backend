@@ -1,6 +1,5 @@
 // ================================================================
 //  CampusCare — server.js with JWT + Socket.IO Real-time
-//  npm install express cors mongoose nodemailer jsonwebtoken dotenv socket.io
 // ================================================================
 
 require("dotenv").config();
@@ -13,9 +12,8 @@ const { Server } = require("socket.io");
 const sendComplaintEmail = require("./emailService");
 
 const app    = express();
-const server = http.createServer(app);  // ✅ wrap express in http server
+const server = http.createServer(app);
 
-// ✅ Socket.IO attached to http server
 const io = new Server(server, {
     cors: { origin: "*", methods: ["GET", "POST"] }
 });
@@ -24,13 +22,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-
 // ================= MONGODB =================
 
-mongoose.connect("mongodb://127.0.0.1:27017/campuscare")
+mongoose.connect(process.env.MONGO_URL || "mongodb://127.0.0.1:27017/campuscare")
 .then(() => console.log("MongoDB Connected ✅"))
 .catch((err) => console.log(err));
-
 
 // ================= SCHEMA =================
 
@@ -48,7 +44,6 @@ const complaintSchema = new mongoose.Schema({
 
 const Complaint = mongoose.model("Complaint", complaintSchema);
 
-
 // ================= JWT MIDDLEWARE =================
 
 function verifyToken(req, res, next) {
@@ -63,7 +58,6 @@ function verifyToken(req, res, next) {
     }
 }
 
-
 // ================= SOCKET.IO =================
 
 io.on("connection", (socket) => {
@@ -73,11 +67,9 @@ io.on("connection", (socket) => {
     });
 });
 
-
 // ================= HOME =================
 
 app.get("/", (req, res) => res.send("CampusCare Backend Running 🚀"));
-
 
 // ================= ADMIN LOGIN =================
 
@@ -105,7 +97,6 @@ app.post("/admin/login", async (req, res) => {
     res.json({ success: true, message: "Login successful ✅", token });
 });
 
-
 // ================= POST COMPLAINT (public) =================
 
 app.post("/complaint", async (req, res) => {
@@ -114,7 +105,6 @@ app.post("/complaint", async (req, res) => {
         const newComplaint = new Complaint({ name, issue, description });
         await newComplaint.save();
 
-        // ✅ Emit real-time event to ALL connected admin dashboards
         io.emit("newComplaint", {
             _id:         newComplaint._id,
             name,
@@ -139,7 +129,6 @@ app.post("/complaint", async (req, res) => {
     }
 });
 
-
 // ================= PROTECTED ROUTES =================
 
 app.get("/complaints", verifyToken, async (req, res) => {
@@ -156,7 +145,6 @@ app.put("/complaint/:id", verifyToken, async (req, res) => {
         const updated = await Complaint.findByIdAndUpdate(
             req.params.id, { status: req.body.status }, { new: true }
         );
-        // Emit status update to all clients
         io.emit("statusUpdated", { id: req.params.id, status: req.body.status });
         res.json({ message: "Status Updated ✅", data: updated });
     } catch {
@@ -173,7 +161,6 @@ app.delete("/complaint/:id", verifyToken, async (req, res) => {
         res.status(500).json({ message: "Error deleting complaint" });
     }
 });
-
 
 // ================= SERVER =================
 
