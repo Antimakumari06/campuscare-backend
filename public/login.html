@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CampusCare — Admin Login</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{background:linear-gradient(135deg,#0d6efd22,#f4f4f4);display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:Arial,sans-serif;}
+.login-card{width:380px;padding:35px 30px;background:white;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.12);}
+.login-card h3{text-align:center;margin-bottom:6px;font-weight:700;color:#0d6efd;}
+.login-card p.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:24px;}
+.form-control{border-radius:8px;padding:11px 14px;}
+.btn-login{border-radius:8px;padding:11px;font-weight:600;font-size:15px;}
+.back-link{display:block;text-align:center;margin-top:16px;font-size:13px;color:#888;cursor:pointer;text-decoration:none;}
+.back-link:hover{color:#0d6efd;}
+#msg{font-size:13px;min-height:20px;}
+.jwt-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:20px;}
+</style>
+</head>
+<body>
+<div class="login-card">
+  <h3>🎓 CampusCare</h3>
+  <p class="subtitle">Admin Panel Login</p>
+
+  <div class="jwt-info">🔐 Secured with JWT Authentication</div>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Email Address</label>
+    <input type="email" id="email" class="form-control" placeholder="admin@gmail.com">
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Password</label>
+    <input type="password" id="password" class="form-control" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
+  </div>
+
+  <button onclick="login()" class="btn btn-primary w-100 btn-login" id="loginBtn">Login →</button>
+  <p id="msg" class="text-danger mt-3 text-center"></p>
+  <a class="back-link" onclick="goToComplaintForm()">← Back to Complaint Form</a>
+</div>
+
+<script>
+const API_URL="http://localhost:5000";
+
+function goToComplaintForm(){
+  window.location.href="../../frontend/index.html";
+}
+
+async function login(){
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value.trim();
+  const btn=document.getElementById("loginBtn");
+  const msg=document.getElementById("msg");
+
+  if(!email||!password){msg.style.color="red";msg.innerText="⚠️ Please enter email and password.";return;}
+
+  btn.disabled=true;btn.innerText="Logging in...";msg.innerText="";
+
+  try{
+    const res=await fetch(`${API_URL}/admin/login`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email,password})
+    });
+    const data=await res.json();
+
+    if(data.success){
+      // ✅ Store JWT token — NOT just a boolean flag
+      localStorage.setItem("adminToken", data.token);
+      localStorage.setItem("admin", true);
+
+      msg.style.color="green";
+      msg.innerText="✅ Login successful! Redirecting...";
+      setTimeout(()=>window.location.href="admin.html",800);
+    } else {
+      msg.style.color="red";
+      msg.innerText="❌ "+data.message;
+      btn.disabled=false;btn.innerText="Login →";
+    }
+  } catch(err){
+    msg.style.color="red";
+    msg.innerText="❌ Server not reachable. Check: node server.js chal raha hai?";
+    btn.disabled=false;btn.innerText="Login →";
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>CampusCare — Submit Complaint</title>
+
+<!-- ✅ PWA Meta Tags -->
+<meta name="theme-color" content="#e23744"/>
+<meta name="description" content="Submit your campus complaints easily. Instant email to admin."/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="CampusCare"/>
+
+<!-- ✅ PWA Manifest -->
+<link rel="manifest" href="manifest.json"/>
+
+<!-- ✅ App Icons -->
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;600;700&family=Satoshi:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+  --red: #e23744;
+  --red-dark: #c42d39;
+  --orange: #ffc371;
+  --bg: #faf9f7;
+  --white: #ffffff;
+  --text: #1a1a2e;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --shadow: 0 8px 32px rgba(226,55,68,0.10);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Satoshi', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  /* Safe area for notch phones */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ── NAVBAR ── */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: white;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--red); letter-spacing: -0.5px;
+}
+.logo span { color: var(--text); }
+.nav-links { display: flex; gap: 8px; align-items: center; }
+.nav-links a {
+  text-decoration: none; color: var(--muted);
+  font-size: 0.875rem; font-weight: 500;
+  padding: 8px 14px; border-radius: 8px; transition: all 0.2s;
+}
+.nav-links a:hover { background: #fef2f2; color: var(--red); }
+.nav-btn { background: var(--red) !important; color: white !important; border-radius: 8px !important; }
+.nav-btn:hover { background: var(--red-dark) !important; }
+.hamburger { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
+.hamburger span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+
+/* ── INSTALL BANNER ── */
+.install-banner {
+  display: none;
+  background: linear-gradient(135deg, #1a1a2e, #2d2d4e);
+  color: white;
+  padding: 12px 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.875rem;
+}
+.install-banner.show { display: flex; }
+.install-banner strong { font-weight: 700; }
+.install-banner p { opacity: 0.85; font-size: 0.8rem; }
+.install-btn-wrap { display: flex; gap: 8px; flex-shrink: 0; }
+.install-btn {
+  background: var(--red); color: white;
+  border: none; border-radius: 8px;
+  padding: 8px 16px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+}
+.install-dismiss {
+  background: rgba(255,255,255,0.15); color: white;
+  border: none; border-radius: 8px;
+  padding: 8px 12px; font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 56px 24px 44px;
+  background: linear-gradient(135deg, #e23744 0%, #ff8c69 50%, #ffc371 100%);
+  color: white; overflow: hidden; text-align: center;
+}
+.hero::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 260px; height: 260px; background: rgba(255,255,255,0.08); border-radius: 50%;
+}
+.hero-badge {
+  display: inline-block; background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 16px; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 16px;
+  animation: fadeDown 0.6s ease both;
+}
+.hero h1 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700; line-height: 1.2;
+  margin-bottom: 12px;
+  animation: fadeDown 0.6s ease 0.1s both;
+}
+.hero p {
+  font-size: 0.95rem; opacity: 0.9;
+  max-width: 420px; margin: 0 auto;
+  animation: fadeDown 0.6s ease 0.2s both;
+}
+
+/* ── CATEGORIES ── */
+.section { padding: 40px 24px; }
+.section-title { font-family: 'Clash Display', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+.section-sub { color: var(--muted); font-size: 0.875rem; margin-bottom: 24px; }
+.categories {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.cat-card {
+  background: white; border: 2px solid var(--border);
+  border-radius: 14px; padding: 20px 12px;
+  text-align: center; cursor: pointer;
+  transition: all 0.25s;
+  animation: fadeUp 0.5s ease both;
+  -webkit-tap-highlight-color: transparent;
+}
+.cat-card:active { transform: scale(0.96); }
+.cat-card:hover, .cat-card.selected {
+  border-color: var(--red); background: #fef2f2;
+  transform: translateY(-3px); box-shadow: var(--shadow);
+}
+.cat-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+.cat-card p { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+
+/* ── FORM ── */
+.form-section { padding: 0 20px 60px; }
+.form-card {
+  background: white; border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+  max-width: 600px; margin: 0 auto;
+  animation: fadeUp 0.6s ease 0.3s both;
+}
+.form-card h2 { font-family: 'Clash Display', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+.form-card .subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 7px; }
+.form-group label span { color: var(--red); }
+.form-control {
+  width: 100%; padding: 13px 16px;
+  border: 2px solid var(--border); border-radius: 12px;
+  font-family: 'Satoshi', sans-serif; font-size: 1rem;
+  color: var(--text); background: #fafafa; outline: none;
+  transition: all 0.2s;
+  /* Prevent zoom on iOS */
+  font-size: 16px;
+}
+.form-control:focus { border-color: var(--red); background: white; box-shadow: 0 0 0 4px rgba(226,55,68,0.08); }
+textarea.form-control { resize: vertical; min-height: 110px; }
+select.form-control { cursor: pointer; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.submit-btn {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--red), #ff6b6b);
+  color: white; border: none; border-radius: 12px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: all 0.25s;
+  margin-top: 8px;
+  /* Touch friendly */
+  min-height: 52px;
+  -webkit-tap-highlight-color: transparent;
+}
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(226,55,68,0.35); }
+.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #111; color: white;
+  padding: 14px 20px; border-radius: 12px;
+  font-size: 0.875rem; font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999; min-width: 280px; max-width: calc(100vw - 40px);
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { background: #065f46; }
+.toast.error { background: #7f1d1d; }
+
+footer {
+  text-align: center; padding: 20px 24px;
+  color: var(--muted); font-size: 0.78rem;
+  border-top: 1px solid var(--border);
+}
+
+@keyframes fadeDown { from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: white; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .nav-links.open { display: flex; }
+  .hamburger { display: flex; }
+  .form-row { grid-template-columns: 1fr; }
+  .categories { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .cat-card { padding: 16px 8px; }
+  .cat-card .icon { font-size: 1.5rem; }
+}
+@media (max-width: 360px) {
+  .categories { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ✅ PWA Install Banner -->
+<div class="install-banner" id="installBanner">
+  <div>
+    <strong>📱 Install CampusCare App</strong>
+    <p>Add to home screen for app-like experience</p>
+  </div>
+  <div class="install-btn-wrap">
+    <button class="install-btn" id="installBtn">Install</button>
+    <button class="install-dismiss" onclick="dismissInstall()">✕</button>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">Campus<span>Care</span></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#">Home</a>
+    <a href="#">Track Complaint</a>
+    <a href="login.html" class="nav-btn">Admin Login</a>
+  </div>
+  <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🎓 Campus Complaint Portal</div>
+  <h1>Your Voice Matters.<br/>We're Listening.</h1>
+  <p>Submit your campus complaints and get them resolved instantly.</p>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="section-title">Choose a Category</div>
+  <div class="section-sub">Tap to select your issue type</div>
+  <div class="categories">
+    <div class="cat-card" onclick="selectCategory('WiFi Issue', this)"><div class="icon">📶</div><p>WiFi Issue</p></div>
+    <div class="cat-card" onclick="selectCategory('Fan / AC', this)"><div class="icon">🌀</div><p>Fan / AC</p></div>
+    <div class="cat-card" onclick="selectCategory('Washroom', this)"><div class="icon">🚿</div><p>Washroom</p></div>
+    <div class="cat-card" onclick="selectCategory('Electricity', this)"><div class="icon">⚡</div><p>Electricity</p></div>
+    <div class="cat-card" onclick="selectCategory('Canteen', this)"><div class="icon">🍽️</div><p>Canteen</p></div>
+    <div class="cat-card" onclick="selectCategory('Other', this)"><div class="icon">📝</div><p>Other</p></div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section">
+  <div class="form-card">
+    <h2>Submit a Complaint</h2>
+    <p class="subtitle">Fill in the details — admin will be notified instantly via email.</p>
+    <form id="complaintForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name <span>*</span></label>
+          <input type="text" id="name" class="form-control" placeholder="Your name" required autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label>Issue Type <span>*</span></label>
+          <select id="issue" class="form-control" required>
+            <option value="" disabled selected>Select issue</option>
+            <option>WiFi Issue</option>
+            <option>Fan / AC</option>
+            <option>Washroom</option>
+            <option>Electricity</option>
+            <option>Canteen</option>
+            <option>Hostel</option>
+            <option>Library</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description <span>*</span></label>
+        <textarea id="description" class="form-control" placeholder="Describe your issue in detail..." required></textarea>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Complaint →</button>
+    </form>
+  </div>
+</section>
+
+<footer>© 2026 CampusCare · Made with 💙 for students</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = "http://localhost:5000";
+
+// ── PWA Install Prompt ──────────────────────────────────────
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("installBanner").classList.add("show");
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log("PWA install:", outcome);
+  deferredPrompt = null;
+  document.getElementById("installBanner").classList.remove("show");
+});
+
+function dismissInstall() {
+  document.getElementById("installBanner").classList.remove("show");
+  deferredPrompt = null;
+}
+
+window.addEventListener("appinstalled", () => {
+  showToast("✅ CampusCare installed successfully!", "success");
+});
+
+// ── Service Worker ──────────────────────────────────────────
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js")
+      .then(() => console.log("SW registered ✅"))
+      .catch((e) => console.log("SW error:", e));
+  });
+}
+
+// ── Category select ─────────────────────────────────────────
+function selectCategory(name, el) {
+  document.getElementById("issue").value = name;
+  document.querySelectorAll(".cat-card").forEach(c => c.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+// ── Hamburger ───────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("open");
+}
+
+// ── Toast ────────────────────────────────────────────────────
+function showToast(msg, type = "success") {
+  const t = document.getElementById("toast");
+  t.textContent = (type === "success" ? "✅ " : "❌ ") + msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove("show"), 3500);
+}
+
+// ── Submit Form ──────────────────────────────────────────────
+document.getElementById("complaintForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const name        = document.getElementById("name").value.trim();
+  const issue       = document.getElementById("issue").value;
+  const description = document.getElementById("description").value.trim();
+  const btn         = document.getElementById("submitBtn");
+
+  if (!issue) { showToast("Please select an issue type", "error"); return; }
+
+  btn.disabled = true; btn.textContent = "Submitting...";
+
+  try {
+    const res  = await fetch(`${API_URL}/complaint`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, issue, description })
+    });
+    const data = await res.json();
+    showToast("Complaint submitted! Admin notified via email.", "success");
+    this.reset();
+    document.querySelectorAll(".cat-card").forEach(c => c.classList.remove("selected"));
+  } catch {
+    showToast("Server not reachable. Is backend running?", "error");
+  }
+
+  btn.disabled = false; btn.textContent = "Submit Complaint →";
+});
+</script>
+</body>
+</html>
