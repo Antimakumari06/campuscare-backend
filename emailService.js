@@ -1,26 +1,22 @@
 const nodemailer = require("nodemailer");
 
-// ================= TRANSPORTER =================
-
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
         user: "campuscare53@gmail.com",
-        pass: "vskfjijieitqayzb"   // Gmail App Password
-    }
+        pass: "vskfjijieitqayzb"
+    },
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 5000
 });
-
-
-// ================= SEND EMAIL FUNCTION =================
 
 const sendComplaintEmail = async (name, issue, description) => {
 
-    // ✅ Login alert email (admin ke login pe)
     if (issue === "Login Alert") {
-
         await transporter.sendMail({
             from: "CampusCare <campuscare53@gmail.com>",
-            to: "campuscare53@gmail.com",   // admin ko jaayega
+            to: "campuscare53@gmail.com",
             subject: "🔐 Admin Login Alert — CampusCare",
             html: `
                 <div style="font-family:Arial;padding:20px;max-width:500px;border:1px solid #ddd;border-radius:10px;">
@@ -32,14 +28,12 @@ const sendComplaintEmail = async (name, issue, description) => {
                 </div>
             `
         });
-
         return;
     }
 
-    // ✅ New complaint email (student submit kare tab)
     await transporter.sendMail({
         from: "CampusCare <campuscare53@gmail.com>",
-        to: "lloydcare12@gmail.com",     // admin ka email
+        to: "lloydcare12@gmail.com",
         subject: "📢 New Complaint Submitted — CampusCare",
         html: `
             <div style="font-family:Arial;padding:20px;max-width:500px;border:1px solid #ddd;border-radius:10px;">
@@ -63,7 +57,7 @@ const sendComplaintEmail = async (name, issue, description) => {
                     </tr>
                 </table>
                 <br/>
-                <a href="http://localhost:5500/admin.html"
+                <a href="https://campuscare-backend-production.up.railway.app/admin.html"
                    style="background:#0d6efd;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">
                    Open Admin Panel →
                 </a>
@@ -71,7 +65,6 @@ const sendComplaintEmail = async (name, issue, description) => {
             </div>
         `
     });
-
 };
 
 module.exports = sendComplaintEmail;
