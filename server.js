@@ -116,7 +116,15 @@ app.post("/complaint", async (req, res) => {
 
         console.log("🔔 Real-time notification sent!");
 
-        await sendComplaintEmail(name, issue, description);
+        try {
+    try {
+    await sendComplaintEmail(name, issue, description);
+} catch(emailErr) {
+    console.log("Email error (ignored):", emailErr.message);
+}
+} catch(emailErr) {
+    console.log("Email error (ignored):", emailErr.message);
+}
         console.log("Complaint email sent 📧");
 
         res.status(201).json({
