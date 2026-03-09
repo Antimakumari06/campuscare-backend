@@ -3,20 +3,20 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: "campuscare53@gmail.com",
-        pass: "vskfjijieitqayzb"
+        user: process.env.GMAIL_USER || "campuscare53@gmail.com",
+        pass: process.env.GMAIL_PASS || "vskfjijieitqayzb"
     },
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 5000
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 const sendComplaintEmail = async (name, issue, description) => {
 
     if (issue === "Login Alert") {
         await transporter.sendMail({
-            from: "CampusCare <campuscare53@gmail.com>",
-            to: "campuscare53@gmail.com",
+            from: `CampusCare <${process.env.GMAIL_USER || "campuscare53@gmail.com"}>`,
+            to: process.env.GMAIL_USER || "campuscare53@gmail.com",
             subject: "🔐 Admin Login Alert — CampusCare",
             html: `
                 <div style="font-family:Arial;padding:20px;max-width:500px;border:1px solid #ddd;border-radius:10px;">
@@ -32,7 +32,7 @@ const sendComplaintEmail = async (name, issue, description) => {
     }
 
     await transporter.sendMail({
-        from: "CampusCare <campuscare53@gmail.com>",
+        from: `CampusCare <${process.env.GMAIL_USER || "campuscare53@gmail.com"}>`,
         to: "lloydcare12@gmail.com",
         subject: "📢 New Complaint Submitted — CampusCare",
         html: `
