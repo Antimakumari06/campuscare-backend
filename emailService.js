@@ -33,7 +33,7 @@ const sendComplaintEmail = async (name, issue, description) => {
 
     await transporter.sendMail({
         from: `CampusCare <${process.env.GMAIL_USER || "campuscare53@gmail.com"}>`,
-        to: "lloydcare12@gmail.com",
+        to: "campucare53@gmail.com",
         subject: "📢 New Complaint Submitted — CampusCare",
         html: `
             <div style="font-family:Arial;padding:20px;max-width:500px;border:1px solid #ddd;border-radius:10px;">
